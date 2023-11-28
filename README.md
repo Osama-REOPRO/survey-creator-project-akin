@@ -1,22 +1,22 @@
-# Neo Surveys :sparkles: :sparkles: :sparkles:
-### A basic survey web application made using Nodejs :zap: and Reactjs :crystal_ball: with custom data persistence  :trollface: :trollface:.
-## Features :fire: :
-- Create a survey for people to take.
-- Choose a survey from a list of surveys created by people and take it.
+# Survey Creator
+### A basic survey web application made using Nodejs and Reactjs with custom data persistence
+the project was made to be submitted for a company interview
+## Features:
+- Create a survey.
+- Choose a survey from a list and take it.
 - See the results from your survey.
 
-## How to run the project :worried: :
-- navigate to a proper directory and open your terminal there.
-- Clone the project by executing the following git command:
+## How to run the project
+- Clone the project:
 ```
-git clone "https://github.com/TheX-ByAaron/neo-surveys.git"
+git clone "https://github.com/Osama-REOPRO/survey-creator-project-akin.git"
 ```
-### The node backend :zap::
+### The node backend:
 - Once finished, we need to start our backend server. In order to do that, we navigate to the backend folder from the inside of our cloned repository folder with the following command:
 ```
-cd .\NeoSurveys-Backend\
+cd backend-node
 ```
-- We now will load the backend's node modules via npm like this:
+- Load the required node modules:
 ```
 npm i
 ```
@@ -26,8 +26,8 @@ node index.js
 ```
 - All set now the backend is up and working.
 
-### The react app :crystal_ball: :
-- open a new terminal window on the "neosurveys-react" directory and download the dependencies:
+### The react app:
+- open a new terminal window on the "frontend-react" directory and download the dependencies:
 ```
 npm i
 ```
@@ -35,6 +35,5 @@ npm i
 ```
 npm start
 ```
-- All done. Enjoy creating and taking surveys :grin: :grin: :grin:.
+- All done.
 <br>
-<b>NOTE :sparkles::</b> no need to worry about the database. Everything is created and handled via custom persistence methods that do not require any additional configuration.
