@@ -1,5 +1,5 @@
 # Survey Creator
-### A basic survey web application made using Nodejs and Reactjs with custom data persistence
+### A basic survey web application made using Nodejs
 the project was made to be submitted for a company interview
 ## Features:
 - Create a survey.
@@ -25,15 +25,3 @@ npm i
 node index.js
 ```
 - All set now the backend is up and working.
-
-### The react app:
-- open a new terminal window on the "frontend-react" directory and download the dependencies:
-```
-npm i
-```
-- Once all dependencies are downloaded, run the next command to start the app:
-```
-npm start
-```
-- All done.
-<br>
