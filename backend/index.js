@@ -3,8 +3,6 @@ import morgan from "morgan"
 import { dirname, join } from "path";
 import { fileURLToPath } from "url"
 
-// test change
-
 const __dirname = dirname(fileURLToPath(import.meta.url));
 import pg from "pg";
 
