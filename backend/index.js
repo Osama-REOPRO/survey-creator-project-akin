@@ -10,10 +10,7 @@ const app = express();
 const port = 3000;
 app.use(morgan("tiny"));
 
-app.get("/", (req, res) => { res.sendFile(join(__dirname, '..', 'frontend', 'index.html')); });
-app.get("/index.js", (req, res) => { res.sendFile(join(__dirname, '..', 'frontend', 'index.js')); });
-app.get("/survey.html", (req, res) => { res.sendFile(join(__dirname, '..', 'frontend', 'survey.html')); });
-app.get("/survey-creator.html", (req, res) => { res.sendFile(join(__dirname, '..', 'frontend', 'survey-creator.html')); });
+
 const db = new pg.Client({
     user: "postgres",
     host: "localhost",
