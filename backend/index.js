@@ -11,57 +11,30 @@ const port = 3000;
 app.use(morgan("tiny"));
 
 
-const db = new pg.Client({
+const client = new pg.Client({
     user: "postgres",
     host: "localhost",
     database: "surveys",
     password: "admin",
     port: "5432",
 });
-db.connect();
+client.connect();
 
-async function dbquery(query, log=false) {
-    var data;
-    await db.query(query, (err, res) => {
-            if (err) {
-                console.error("Error executing query", err.stack);
-                data = 'Error executing query';
-            } else {
-                log && console.log("query result:", res.rows);
-                data = res;
-            }
-            return data;
-    });
-    return data;
-}
-console.log(dbquery("SELECT * FROM creators"));
+const creators = await client.query('SELECT * FROM creators');
+console.log(creators.rows);
 
-var userSignedIn = false;
-var username;
-var password;
-function userSignIn(uname, pass) {
-    const res = dbquery(`
+async function checkUser(uname, pass) {
+    const res = await client.query(`
         select count(*)
         from creators
         where name = '${uname}' and pass = '${pass}'
     `);
-    if(res.rows[0].count > 0){
-        userSignedIn = true;
-        username = uname;
-        password = pass;
-    }else{
-        console.log("Username or password wrong");
-    }
-}
-// console.log(dbquery(`
-//                 select count(*)
-//                 from creators
-//                 where name = 'user1' and pass = 'pass1'
-//                     `));
-// userSignIn('user1','pass1');
 
-function getCreatedSurveys(username){
-    dbquery(`
+    return (res.rows[0].count > 0) ? true : false;
+}
+
+async function getCreatedSurveys(username){
+    return await client.query(`
         SELECT surveys.name
         FROM creators
         JOIN surveys
