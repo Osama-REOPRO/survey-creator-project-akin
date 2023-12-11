@@ -23,7 +23,7 @@ const client = new pg.Client({
 });
 client.connect();
 
-const creators = await client.query('SELECT name FROM creators');
+let creators = await client.query('SELECT name FROM creators');
 console.log('users:', creators.rows);
 
 
@@ -36,9 +36,6 @@ async function verifyUser(uname, pass) {
 
     return (res.rows[0].count > 0) ? true : false;
 }
-
-
-
 async function getUserSurveys(username) {
     return await client.query(`
         SELECT surveys.name
@@ -49,31 +46,48 @@ async function getUserSurveys(username) {
     `);
 }
 
-app.get("/", (req, res) => { res.redirect(format({
-    pathname:'/login'
-}))});
+app.get("/", (req, res) => { res.redirect(format({ pathname: '/login' })); return; });
 app.get("/login", async (req, res) => {
     console.log('login rout');
     console.log(req.query);
 
+    let _showWarning = false, _showRegistered = false, _message = '';
+
     if (Object.keys(req.query).length == 0) {
         console.log('null query');
-        res.render(join(__dirname, '..', 'frontend', 'login.ejs'), { showWarning: false, showRegistered: false, message: '' });
+        _showWarning = false;
+        _showRegistered = false;
+        _message = '';
     } else if (req.query.action == 'login') {
         console.log('user logging in');
         let userVerified = await verifyUser(req.query.username, req.query.password);
         if (userVerified) {
-            res.sendFile(join(__dirname, '..', 'frontend', 'index.html'));
+            res.redirect(format({
+                pathname: '/index',
+                query: {}
+            }));
+            return;
         } else {
-            res.render(join(__dirname, '..', 'frontend', 'login.ejs'), { showWarning: true, showRegistered: false, message: 'Wrong username or password' });
+            _showWarning = true;
+            _showRegistered = false;
+            _message = 'Wrong username or password';
         }
     } else if (req.query.action == 'register') {
         console.log('user registering');
-        res.render(join(__dirname, '..', 'frontend', 'register.ejs'), { showWarning: false, showSuccess: false, message: '' });
+        res.redirect(format({
+            pathname: '/register',
+            query: {}
+        }));
+        return;
     } else if (req.query.action == 'regSuccess') {
-        res.render(join(__dirname, '..', 'frontend', 'login.ejs'), { showWarning: false, showRegistered: true, message: 'created new user!, you can login now' });
+        _showWarning = false;
+        _showRegistered = true;
+        _message = 'created new user!, you can login now';
     }
+
+    res.render(join(__dirname, '..', 'frontend', 'login.ejs'), { showWarning: _showWarning, showRegistered: _showRegistered, message: _message });
 });
+app.get('/register', (req, res) => { res.render(join(__dirname, '..', 'frontend', 'register.ejs'), { showWarning: false, showSuccess: false, message: '' }) });
 app.post("/register", async (req, res) => {
     console.log(req.body);
     let data = {
@@ -83,53 +97,51 @@ app.post("/register", async (req, res) => {
     }
     console.log(data);
 
-    let usernameTooShort = data.username == null || data.username.length <= 3;
-    console.log('usernameTooShort', usernameTooShort);
-    let userExists = await verifyUser(data.username, data.password);
-    console.log('userExists', userExists);
-    let shortPass = data.password?.length < 3;
-    console.log('shortPass', shortPass);
-    let passDiff = data.password != data.repassword;
-    console.log('passDiff', passDiff);
 
+    // guard statements
 
-    if (usernameTooShort) {
+    if (data.username == null || data.username.length <= 3) { // username too short
         console.log('username too short');
-        res.render(join(__dirname, '..', 'frontend', 'register.ejs'), { showWarning: true, showSuccess: false, message: "username too short" });
+        res.render(join(__dirname, '..', 'frontend', 'register.ejs'), { showWarning: true, showSuccess: false, message: 'username too short' });
+        return;
     }
-    else if (userExists) {
+    if (await verifyUser(data.username, data.password)) { // user already exists
         console.log('user already exists');
         res.render(join(__dirname, '..', 'frontend', 'register.ejs'), { showWarning: true, showSuccess: false, message: 'username already exists' });
-    } else if (shortPass) {
+        return;
+    }
+    if (data.password?.length < 3) { // short password
         console.log('password too short');
         res.render(join(__dirname, '..', 'frontend', 'register.ejs'), { showWarning: true, showSuccess: false, message: 'password too short' });
-    } else if (passDiff) {
+        return;
+    }
+    if (data.password != data.repassword) { // repeat password different
         console.log('passwords not same');
         res.render(join(__dirname, '..', 'frontend', 'register.ejs'), { showWarning: true, showSuccess: false, message: 'repeat password exactly' });
-    } else {
-        console.log(`creating new user: \n username: ${data.username} \n password: ${data.password}`);
-        await client.query(`
+        return;
+    }
+
+    console.log(`creating new user: \n username: ${data.username} \n password: ${data.password}`);
+    await client.query(`
         insert into creators (name,pass)
         values ('${data.username}','${data.password}');
         `);
-        let userVerified = await verifyUser(data.username, data.password);
-        if (userVerified) {
-            res.redirect(format({
-                pathname: '/login',
-                query: {
-                    action:'regSuccess'
-                }
-            }));
-            // res.render(join(__dirname, '..', 'frontend', 'login.ejs'), { showWarning: false, showRegistered: true, message: 'created new user!, you can login now' });
-        } else {
-            res.render(join(__dirname, '..', 'frontend', 'login.ejs'), { showWarning: true, showRegistered: false, message: 'database error!' });
-        }
+    if (await verifyUser(data.username, data.password)) {
+        res.redirect(format({
+            pathname: '/login',
+            query: {
+                action: 'regSuccess'
+            }
+        }));
+        return;
+    } else {
+        res.render(join(__dirname, '..', 'frontend', 'login.ejs'), { showWarning: true, showRegistered: false, message: 'database error!' });
     }
 });
+app.get('/index', (req, res) => { res.render(join(__dirname, '..', 'frontend', 'index.ejs'), {}) });
 app.get("/index.js", (req, res) => { res.sendFile(join(__dirname, '..', 'frontend', 'index.js')); });
 app.get("/survey.html", (req, res) => { res.sendFile(join(__dirname, '..', 'frontend', 'survey.html')); });
 app.get("/survey-creator.html", (req, res) => { res.sendFile(join(__dirname, '..', 'frontend', 'survey-creator.html')); });
-// app.get("/login", (req, res) => { res.render(join(__dirname, '..', 'frontend', 'login.ejs'), { showWarning: false, showRegistered: false, message: '' }); });
 
 
 app.listen(port, () => { console.log(`Started server on port ${port}`); });
