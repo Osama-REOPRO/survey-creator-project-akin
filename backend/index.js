@@ -45,14 +45,9 @@ async function getUserSurveys(username) {
         WHERE creators.name = '${username}'
     `);
 }
-let cs = await getUserSurveys('user1');
-console.log(cs.rows);
-cs.rows.forEach((row)=>{
-    console.log(row.name);
-})
 
-app.get("/", (req, res) => { res.redirect(format({ pathname: '/login' })); return; });
-app.get("/login", async (req, res) => {
+app.get('/', (req, res) => { res.redirect(format({ pathname: '/login' })); return; });
+app.get('/login', async (req, res) => {
     console.log('login rout');
     console.log(req.query);
 
@@ -93,7 +88,7 @@ app.get("/login", async (req, res) => {
     res.render(join(__dirname, '..', 'frontend', 'login.ejs'), { showWarning: _showWarning, showRegistered: _showRegistered, message: _message });
 });
 app.get('/register', (req, res) => { res.render(join(__dirname, '..', 'frontend', 'register.ejs'), { showWarning: false, showSuccess: false, message: '' }) });
-app.post("/register", async (req, res) => {
+app.post('/register', async (req, res) => {
     console.log(req.body);
     let data = {
         username: req.body.username,
@@ -104,7 +99,6 @@ app.post("/register", async (req, res) => {
 
 
     // guard statements
-
     if (data.username == null || data.username.length <= 3) { // username too short
         console.log('username too short');
         res.render(join(__dirname, '..', 'frontend', 'register.ejs'), { showWarning: true, showSuccess: false, message: 'username too short' });
@@ -158,9 +152,9 @@ app.get('/index', async (req, res) => {
         createdSurveys: createdSurveys.rows
     })
 });
-app.get("/index.js", (req, res) => { res.sendFile(join(__dirname, '..', 'frontend', 'index.js')); });
-app.get("/survey.html", (req, res) => { res.sendFile(join(__dirname, '..', 'frontend', 'survey.html')); });
-app.get("/survey-creator.html", (req, res) => { res.sendFile(join(__dirname, '..', 'frontend', 'survey-creator.html')); });
-
+app.get('/index.js', (req, res) => { res.sendFile(join(__dirname, '..', 'frontend', 'index.js')); });
+app.get('/survey.html', (req, res) => { res.sendFile(join(__dirname, '..', 'frontend', 'survey.html')); });
+app.get('/survey-creator.html', (req, res) => { res.sendFile(join(__dirname, '..', 'frontend', 'survey-creator.html')); });
+app.get('/survey-creator.js', (req, res) => { res.sendFile(join(__dirname, '..', 'frontend', 'survey-creator.js')); });
 
 app.listen(port, () => { console.log(`Started server on port ${port}`); });
