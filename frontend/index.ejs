@@ -1,26 +1,34 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Survey Creator</title>
     <link rel="icon" href="data:;base64,iVBORw0KGgo="> <!-- disable favicon -->
 </head>
+
 <body>
     <h1>Survey Creator</h1>
+    <h2>Hello <%= creatorName %>!</h2>
     <!-- <button onclick="createSurvey()">Create New Survey</button> -->
     <form action="survey-creator.html">
         <input type="submit" value="Create New Survey" />
     </form>
-    
-    
+
+
     <h2>Created Surveys</h2>
     <ul>
-        <li><a href="survey.html">Survey 1</a></li>
-        <li><a href="survey.html">Survey 2</a></li>
-        <li><a href="survey.html">Survey 3</a></li>
+        <% createdSurveys.forEach((survey)=> { %>
+            <li>
+                <a href=<%='/' + creatorName + '/' + survey.name %>>
+                    <%= survey.name %>
+                </a>
+            </li>
+            <% }); %>
     </ul>
 
     <script src="index.js" charset="UTF-8"></script>
 </body>
+
 </html>

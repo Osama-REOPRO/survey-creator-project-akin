@@ -45,6 +45,11 @@ async function getUserSurveys(username) {
         WHERE creators.name = '${username}'
     `);
 }
+let cs = await getUserSurveys('user1');
+console.log(cs.rows);
+cs.rows.forEach((row)=>{
+    console.log(row.name);
+})
 
 app.get("/", (req, res) => { res.redirect(format({ pathname: '/login' })); return; });
 app.get("/login", async (req, res) => {
@@ -64,7 +69,7 @@ app.get("/login", async (req, res) => {
         if (userVerified) {
             res.redirect(format({
                 pathname: '/index',
-                query: {}
+                query: {username: req.query.username}
             }));
             return;
         } else {
@@ -138,7 +143,21 @@ app.post("/register", async (req, res) => {
         res.render(join(__dirname, '..', 'frontend', 'login.ejs'), { showWarning: true, showRegistered: false, message: 'database error!' });
     }
 });
-app.get('/index', (req, res) => { res.render(join(__dirname, '..', 'frontend', 'index.ejs'), {}) });
+app.get('/index', async (req, res) => {
+    console.log(req.query);
+    
+    if(Object.keys(req.query).length == 0){
+        res.redirect(format({ pathname: '/login' })); return;
+    }
+
+    let username= req.query.username;
+    let createdSurveys = await getUserSurveys(username);
+    
+    res.render(join(__dirname, '..', 'frontend', 'index.ejs'), {
+        creatorName: username,
+        createdSurveys: createdSurveys.rows
+    })
+});
 app.get("/index.js", (req, res) => { res.sendFile(join(__dirname, '..', 'frontend', 'index.js')); });
 app.get("/survey.html", (req, res) => { res.sendFile(join(__dirname, '..', 'frontend', 'survey.html')); });
 app.get("/survey-creator.html", (req, res) => { res.sendFile(join(__dirname, '..', 'frontend', 'survey-creator.html')); });
