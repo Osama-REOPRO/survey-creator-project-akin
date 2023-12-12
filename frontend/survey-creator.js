@@ -1,5 +1,3 @@
-// import { json } from "body-parser";
-
 let questionsList = document.getElementById('questions');
 
 function Question(question_text, answer_type = 'text') {
