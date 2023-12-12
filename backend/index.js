@@ -156,5 +156,8 @@ app.get('/index.js', (req, res) => { res.sendFile(join(__dirname, '..', 'fronten
 app.get('/survey.html', (req, res) => { res.sendFile(join(__dirname, '..', 'frontend', 'survey.html')); });
 app.get('/survey-creator.html', (req, res) => { res.sendFile(join(__dirname, '..', 'frontend', 'survey-creator.html')); });
 app.get('/survey-creator.js', (req, res) => { res.sendFile(join(__dirname, '..', 'frontend', 'survey-creator.js')); });
+app.post('/submitSurvey', (req,res)=>{
+    console.log(req.body);
+})
 
 app.listen(port, () => { console.log(`Started server on port ${port}`); });

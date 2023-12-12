@@ -12,21 +12,12 @@
     <form onsubmit="return false">
         <input placeholder="survey title">
         <ol id="questions">
-            <li>
-                <textarea style="vertical-align:top; resize: vertical;"
-                    oninput='this.style.height = ""; this.style.height = this.scrollHeight + "px"'
-                    placeholder="Question" rows="2" cols="70"></textarea><br>
-                <input type="radio" name="answerType1" checked="checked">
-                <label for="answerType">text answer</label>
-                <input type="radio" name="answerType1">
-                <label for="answerType">yes/no answer</label><br><br>
-                <button onclick="removeQuestion()">Delete Question</button><br><br>
-            </li>
         </ol>
         <button onclick="addQuestion()">Add Question</button><br><br>
-        <button>Create Survey</button>
+        <button id="createSurveyButton">Create Survey</button>
     </form>
 
+    <script src="https://code.jquery.com/jquery-3.7.1.js" integrity="sha256-eKhayi8LEQwp4NKxN+CfCh+3qOVUtJn3QNZ0TciWLP4=" crossorigin="anonymous"></script>
     <script src="survey-creator.js" charset="UTF-8"></script>
 </body>
 
