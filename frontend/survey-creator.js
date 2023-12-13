@@ -11,8 +11,12 @@ addQuestion();
 
 let createSurveyButton = document.getElementById('createSurveyButton').addEventListener('click', () => {
     console.log('create survey button clicked');
-    let dataToSend = JSON.stringify(questions);
-    $.post('/submitSurvey', dataToSend, (data,status)=>{
+    let dataToSend = {
+        username: sessionStorage.getItem('username'),
+        surveyTitle: document.getElementById('survey-title').value,
+        surveyQuestions: questions
+    }
+    $.post('/submitSurvey', dataToSend, (data, status) => {
         console.log(`${data} and status is ${status}`);
     })
 });

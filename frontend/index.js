@@ -1,5 +1,6 @@
-console.log("frontend script loaded");
+console.log(`frontend script loaded`);
 
-function createSurvey(event){
-    console.log("creating survey!");
+function createSurvey(username){
+    console.log(`creating survey! ${username}`);
+    sessionStorage.setItem('username', username);
 }

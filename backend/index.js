@@ -6,6 +6,7 @@ import bodyParser from "body-parser"
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 import pg from "pg";
+import { create } from "domain";
 
 const app = express();
 const port = 3000;
@@ -45,7 +46,24 @@ async function getUserSurveys(username) {
         WHERE creators.name = '${username}'
     `);
 }
+async function addSurvey(username, title, questions) {
+    let res = await client.query(`
+    insert into surveys (creator_id,name)
+    values (
+        (select id from creators where name='${username}'), 
+        '${title}')
+    returning id;`
+    );
+    let survey_id = res.rows[0].id;
+    questions.forEach(async (question) => {
+        await client.query(`
+            insert into questions (survey_id, question, answer_type)
+            values ('${survey_id}','${question.question_text}','${question.answer_type}')`
+        );
+    });
+}
 
+app.get('', (req, res) => { res.redirect(format({ pathname: '/login' })); return; });
 app.get('/', (req, res) => { res.redirect(format({ pathname: '/login' })); return; });
 app.get('/login', async (req, res) => {
     console.log('login rout');
@@ -64,7 +82,7 @@ app.get('/login', async (req, res) => {
         if (userVerified) {
             res.redirect(format({
                 pathname: '/index',
-                query: {username: req.query.username}
+                query: { username: req.query.username }
             }));
             return;
         } else {
@@ -139,14 +157,14 @@ app.post('/register', async (req, res) => {
 });
 app.get('/index', async (req, res) => {
     console.log(req.query);
-    
-    if(Object.keys(req.query).length == 0){
+
+    if (Object.keys(req.query).length == 0) {
         res.redirect(format({ pathname: '/login' })); return;
     }
 
-    let username= req.query.username;
+    let username = req.query.username;
     let createdSurveys = await getUserSurveys(username);
-    
+
     res.render(join(__dirname, '..', 'frontend', 'index.ejs'), {
         creatorName: username,
         createdSurveys: createdSurveys.rows
@@ -156,8 +174,9 @@ app.get('/index.js', (req, res) => { res.sendFile(join(__dirname, '..', 'fronten
 app.get('/survey.html', (req, res) => { res.sendFile(join(__dirname, '..', 'frontend', 'survey.html')); });
 app.get('/survey-creator.html', (req, res) => { res.sendFile(join(__dirname, '..', 'frontend', 'survey-creator.html')); });
 app.get('/survey-creator.js', (req, res) => { res.sendFile(join(__dirname, '..', 'frontend', 'survey-creator.js')); });
-app.post('/submitSurvey', (req,res)=>{
+app.post('/submitSurvey', async (req, res) => {
     console.log(req.body);
+    await addSurvey(req.body.username, req.body.surveyTitle, req.body.surveyQuestions);
 })
 
 app.listen(port, () => { console.log(`Started server on port ${port}`); });

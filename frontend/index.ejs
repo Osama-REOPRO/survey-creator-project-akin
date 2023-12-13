@@ -13,7 +13,7 @@
     <h2>Hello <%= creatorName %>!</h2>
     <!-- <button onclick="createSurvey()">Create New Survey</button> -->
     <form action="survey-creator.html">
-        <input type="submit" value="Create New Survey" />
+        <input type="submit" name="username" value="Create New Survey" onclick="createSurvey('<%= creatorName %>')" />
     </form>
 
 
@@ -27,7 +27,6 @@
             </li>
             <% }); %>
     </ul>
-
     <script src="index.js" charset="UTF-8"></script>
 </body>
 
