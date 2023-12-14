@@ -51,14 +51,14 @@ async function addSurvey(username, title, questions) {
     insert into surveys (creator_id,name)
     values (
         (select id from creators where name='${username}'), 
-        '${title}')
+        $$${title}$$)
     returning id;`
     );
     let survey_id = res.rows[0].id;
     questions.forEach(async (question) => {
         await client.query(`
             insert into questions (survey_id, question, answer_type)
-            values ('${survey_id}','${question.question_text}','${question.answer_type}')`
+            values ('${survey_id}',$$${question.question_text}$$,$$${question.answer_type}$$)`
         );
     });
 }
