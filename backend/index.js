@@ -27,6 +27,7 @@ client.connect();
 let creators = await client.query('SELECT name FROM creators');
 console.log('users:', creators.rows);
 
+// code from ipad, really cool right!
 
 async function verifyUser(uname, pass) {
     const res = await client.query(`
