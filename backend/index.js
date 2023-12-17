@@ -6,7 +6,6 @@ import bodyParser from "body-parser"
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 import pg from "pg";
-import { create } from "domain";
 
 const app = express();
 const port = 3000;
@@ -48,13 +47,14 @@ async function getUserSurveys(username) {
     `);
 }
 async function addSurvey(username, title, questions) {
-    let res = await client.query(`
-    insert into surveys (creator_id,name)
-    values (
-        (select id from creators where name='${username}'), 
-        $$${title}$$)
-    returning id;`
-    );
+    let res = await client.query(`select addSurvey($$${username}$$, $$${title}$$)`);
+    // let res = await client.query(`
+    //     insert into surveys (creator_id,name)
+    //     values (
+    //         (select id from creators where name='${username}'),
+    //         $$${title}$$)
+    //     returning id;
+    // `);
     let survey_id = res.rows[0].id;
     questions.forEach(async (question) => {
         await client.query(`
