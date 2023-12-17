@@ -45,7 +45,7 @@ async function getUserSurveys(username) {
     `);
 }
 async function addSurvey(username, title, questions) {
-    let res = await client.query(`select addSurvey($$${username}$$, $$${title}$$)`);
+    let res = await client.query(`select addSurvey($$${username}$$, $$${title}$$) as id`);
     // let res = await client.query(`
     //     insert into surveys (creator_id,name)
     //     values (
@@ -53,11 +53,13 @@ async function addSurvey(username, title, questions) {
     //         $$${title}$$)
     //     returning id;
     // `);
+    console.log('res', res.rows);
     let survey_id = res.rows[0].id;
+    console.log(`survey_id = ${survey_id}`);
     questions.forEach(async (question) => {
         await client.query(`
             insert into questions (survey_id, question, answer_type)
-            values ('${survey_id}',$$${question.question_text}$$,$$${question.answer_type}$$)`
+            values (${survey_id},$$${question.question_text}$$,$$${question.answer_type}$$)`
         );
     });
 }
