@@ -36,14 +36,9 @@ async function verifyUser(uname, pass) {
     return (res.rows[0].count > 0) ? true : false;
 }
 async function getUserSurveys(username) {
-    return await client.query(`
-        SELECT surveys.name
-        FROM creators
-        JOIN surveys
-        ON creators.id = surveys.creator_id
-        WHERE creators.name = '${username}'
-    `);
+    return await client.query(`select getusersurveys($$${username}$$) as name`);
 }
+
 async function addSurvey(username, title, questions) {
     let res = await client.query(`select addSurvey($$${username}$$, $$${title}$$) as id`);
     let survey_id = res.rows[0].id;
