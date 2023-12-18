@@ -36,16 +36,14 @@ select addQuestion(1, 'my q text', 'yes/no') as id
 
 -- get user surveys func
 
-drop function if exists getUserSurveys;
+DROP FUNCTION if exists getusersurveys;
 
 create function getUserSurveys(username text)
-returns table(name text)
+returns table(id integer, name text)
 as $$
-	SELECT surveys.name
-	FROM creators
-	JOIN surveys
-	ON creators.id = surveys.creator_id
-	WHERE creators.name = username;
+	SELECT id, name
+	FROM surveys
+	WHERE creator_id = (select id from creators where name=username);
 $$ language sql;
 
-select getUserSurveys('user1') as surveyname
+select * from getUserSurveys('user1')

@@ -36,15 +36,20 @@ async function verifyUser(uname, pass) {
     return (res.rows[0].count > 0) ? true : false;
 }
 async function getUserSurveys(username) {
-    return await client.query(`select getusersurveys($$${username}$$) as name`);
+    return await client.query(`select * from getusersurveys($$${username}$$)`);
 }
-
 async function addSurvey(username, title, questions) {
     let res = await client.query(`select addSurvey($$${username}$$, $$${title}$$) as id`);
     let survey_id = res.rows[0].id;
     questions.forEach(async (question) => {
         await client.query(`select addQuestion(${survey_id}, $$${question.question_text}$$, $$${question.answer_type}$$) as id`);
     });
+}
+async function deleteSurvey(id) {
+    await client.query(`
+        delete from surveys
+        where id = $$${id}$$
+    `);
 }
 
 app.get('', (req, res) => { res.redirect(format({ pathname: '/login' })); return; });
@@ -161,6 +166,12 @@ app.get('/survey-creator.js', (req, res) => { res.sendFile(join(__dirname, '..',
 app.post('/submitSurvey', async (req, res) => {
     console.log(req.body);
     await addSurvey(req.body.username, req.body.surveyTitle, req.body.surveyQuestions);
+})
+app.post('/deleteSurvey', async (req, res) => {
+    console.log(req.body);
+    console.log(`deleting survey with id ${req.body.survey_id}`);
+    await deleteSurvey(req.body.survey_id);
+    res.send(('deleted the survey!'));
 })
 
 app.listen(port, () => { console.log(`Started server on port ${port}`); });
