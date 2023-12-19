@@ -160,7 +160,22 @@ app.get('/index', async (req, res) => {
     })
 });
 app.get('/index.js', (req, res) => { res.sendFile(join(__dirname, '..', 'frontend', 'index.js')); });
-app.get('/survey.html', (req, res) => { res.sendFile(join(__dirname, '..', 'frontend', 'survey.html')); });
+app.get('/survey', async (req, res) => {
+    console.log('query: ', req.query, '\nbody: ', req.body);
+    let survey_id = req.query.surveyid;
+    let isCreator = req.query.isCreator == 'true';
+    let surveyTitle = await client.query(`
+        select name from surveys
+        where id=${survey_id};
+        `);
+    console.log(surveyTitle.rows[0].name);
+    let survey_questions = await client.query(`
+        select id,question,answer_type from questions
+        where survey_id = ${survey_id}
+        `);
+    console.log(survey_questions.rows);
+    res.render(join(__dirname, '..', 'frontend', 'survey.ejs'), { isCreator: isCreator, title: surveyTitle.rows[0].name, questions: survey_questions.rows });
+});
 app.get('/survey-creator.html', (req, res) => { res.sendFile(join(__dirname, '..', 'frontend', 'survey-creator.html')); });
 app.get('/survey-creator.js', (req, res) => { res.sendFile(join(__dirname, '..', 'frontend', 'survey-creator.js')); });
 app.post('/submitSurvey', async (req, res) => {

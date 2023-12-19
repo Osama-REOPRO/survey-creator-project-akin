@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Survey</title>
+</head>
+
+<body>
+    <h1>
+        <%= title %>
+    </h1>
+    <ol>
+        <% questions.forEach(question=> { %>
+            <li>
+                <form>
+                    <label>
+                        <%= question.question %>
+                    </label><br>
+                    <% if(question.answer_type=='text' ){ %>
+                        <input type="text" placeholder="answer">
+                        <% }else if(question.answer_type=='yes-no' ){ %>
+                            <input type="radio" name="question.id"> yes
+                            <input type="radio" name="question.id"> no
+                            <% } %>
+                </form>
+            </li>
+            <% }); %>
+    </ol>
+    <% if(isCreator){ %>
+        <button>Edit Survey</button>
+        <% }else{ %>
+            <button>Submit Answers</button>
+            <% } %>
+</body>
+
+</html>

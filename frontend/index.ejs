@@ -21,15 +21,16 @@
     <ul>
         <% createdSurveys.forEach((survey)=> { %>
             <li>
-                <a href=<%='/' + creatorName + '/' + survey.id %>>
+                <a href=<%='/survey' + '?' + 'isCreator=true' + '&creatorName=' + creatorName + '&surveyid=' + survey.id %>>
                     <%= survey.name %>
                 </a>
                 <span>&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp</span>
-                <button onclick="deleteSurvey('<%= survey.id %>')">Delete</button><br><br>
+                <button onclick="deleteSurvey(' <%=survey.id %>')">Delete</button><br><br>
             </li>
             <% }); %>
     </ul>
-    <script src="https://code.jquery.com/jquery-3.7.1.js" integrity="sha256-eKhayi8LEQwp4NKxN+CfCh+3qOVUtJn3QNZ0TciWLP4=" crossorigin="anonymous"></script>
+    <script src="https://code.jquery.com/jquery-3.7.1.js"
+        integrity="sha256-eKhayi8LEQwp4NKxN+CfCh+3qOVUtJn3QNZ0TciWLP4=" crossorigin="anonymous"></script>
     <script src="index.js" charset="UTF-8"></script>
 </body>
 
