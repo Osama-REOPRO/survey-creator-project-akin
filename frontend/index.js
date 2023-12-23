@@ -1,5 +1,8 @@
 console.log(`frontend script loaded`);
 
+function onload(username){
+    sessionStorage.setItem('username', username);
+}
 function createSurvey(username){
     console.log(`creating survey! ${username}`);
     sessionStorage.setItem('username', username);
