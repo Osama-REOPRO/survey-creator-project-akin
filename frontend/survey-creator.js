@@ -9,15 +9,15 @@ function Question(question_text, answer_type = 'text') {
 let questions = [];
 let questionID = 0;
 
-if (sessionStorage.getItem('editingSurvey')) {
+if (sessionStorage.getItem('editingSurvey') == 'true') {
     // editing survey
     var survey_id = sessionStorage.getItem('survey_id');
     $.get(`/surveyContents?survey_id=${survey_id}`, (data, status) => {
         console.log(data);
         surveyTitle.value = data.title;
-        questions = data.questions;
+        // questions = data.questions;
         console.log(questions);
-        questions.forEach(q => {
+        data.questions.forEach(q => {
             addQuestion(q.question, q.answer_type);
         });
     });
@@ -29,7 +29,8 @@ if (sessionStorage.getItem('editingSurvey')) {
 let createSurveyButton = document.getElementById('createSurveyButton').addEventListener('click', () => {
     console.log('create survey button clicked');
     let dataToSend;
-    if (sessionStorage.getItem('editingSurvey')) {
+    if (sessionStorage.getItem('editingSurvey') == 'true') {
+        console.log('submitting survey edit');
         dataToSend = {
             survey_id: survey_id,
             username: sessionStorage.getItem('username'),
@@ -40,6 +41,7 @@ let createSurveyButton = document.getElementById('createSurveyButton').addEventL
             console.log(`${data} and status is ${status}`);
         })
     } else {
+        console.log('submitting new survey');
         dataToSend = {
             username: sessionStorage.getItem('username'),
             surveyTitle: document.getElementById('survey-title').value,
@@ -48,6 +50,7 @@ let createSurveyButton = document.getElementById('createSurveyButton').addEventL
         $.post('/submitSurvey', dataToSend, (data, status) => {
             console.log(`${data} and status is ${status}`);
         })
+        location.href=`/index?username=${sessionStorage.getItem('username')}`;
     }
 });
 
