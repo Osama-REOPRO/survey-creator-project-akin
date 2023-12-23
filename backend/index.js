@@ -45,6 +45,13 @@ async function addSurvey(username, title, questions) {
         await client.query(`select addQuestion(${survey_id}, $$${question.question_text}$$, $$${question.answer_type}$$) as id`);
     });
 }
+async function editSurvey(survey_id, username, title, questions) {
+    deleteSurvey(survey_id);
+    await client.query(`select addSurvey($$${survey_id}$$, $$${username}$$, $$${title}$$) as id`);
+    questions.forEach(async (question) => {
+        await client.query(`select addQuestion(${survey_id}, $$${question.question_text}$$, $$${question.answer_type}$$) as id`);
+    });
+}
 async function deleteSurvey(id) {
     await client.query(`
         delete from surveys
@@ -160,6 +167,7 @@ app.get('/index', async (req, res) => {
     })
 });
 app.get('/index.js', (req, res) => { res.sendFile(join(__dirname, '..', 'frontend', 'index.js')); });
+app.get('/survey.js', (req, res) => { res.sendFile(join(__dirname, '..', 'frontend', 'survey.js')); });
 app.get('/survey', async (req, res) => {
     console.log('query: ', req.query, '\nbody: ', req.body);
     let survey_id = req.query.surveyid;
@@ -174,13 +182,43 @@ app.get('/survey', async (req, res) => {
         where survey_id = ${survey_id}
         `);
     console.log(survey_questions.rows);
-    res.render(join(__dirname, '..', 'frontend', 'survey.ejs'), { isCreator: isCreator, title: surveyTitle.rows[0].name, questions: survey_questions.rows });
+    res.render(join(__dirname, '..', 'frontend', 'survey.ejs'), { isCreator: isCreator, title: surveyTitle.rows[0].name, survey_id: survey_id, questions: survey_questions.rows });
 });
-app.get('/survey-creator.html', (req, res) => { res.sendFile(join(__dirname, '..', 'frontend', 'survey-creator.html')); });
+app.get('/surveyContents', async (req, res) => {
+    let survey_id = req.query.survey_id;
+    let surveyTitle = await client.query(`
+        select name from surveys
+        where id=${survey_id};
+        `);
+    surveyTitle = surveyTitle.rows[0].name;
+    let survey_questions = await client.query(`
+        select id,question,answer_type from questions
+        where survey_id = ${survey_id}
+        `);
+    survey_questions = survey_questions.rows;
+    res.send({
+        title: surveyTitle,
+        questions: survey_questions
+    })
+});
+app.get('/editSurvey', (req, res) => {
+    console.log('req.query: ', req.query);
+    res.redirect(format({
+        pathname: '/survey-creator.html',
+        query: { survey_id: req.query.survey_id }
+    }));
+})
+app.get('/survey-creator.html', (req, res) => {
+    res.sendFile(join(__dirname, '..', 'frontend', 'survey-creator.html'));
+});
 app.get('/survey-creator.js', (req, res) => { res.sendFile(join(__dirname, '..', 'frontend', 'survey-creator.js')); });
 app.post('/submitSurvey', async (req, res) => {
     console.log(req.body);
     await addSurvey(req.body.username, req.body.surveyTitle, req.body.surveyQuestions);
+})
+app.post('/submitSurveyEdit', async (req, res) => {
+    console.log(req.body);
+    await editSurvey(req.body.survey_id, req.body.username, req.body.surveyTitle, req.body.surveyQuestions);
 })
 app.post('/deleteSurvey', async (req, res) => {
     console.log(req.body);

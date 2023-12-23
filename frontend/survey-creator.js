@@ -1,4 +1,5 @@
 let questionsList = document.getElementById('questions');
+let surveyTitle = document.getElementById('survey-title');
 
 function Question(question_text, answer_type = 'text') {
     this.question_text = question_text;
@@ -7,22 +8,51 @@ function Question(question_text, answer_type = 'text') {
 
 let questions = [];
 let questionID = 0;
-addQuestion();
+
+if (sessionStorage.getItem('editingSurvey')) {
+    // editing survey
+    var survey_id = sessionStorage.getItem('survey_id');
+    $.get(`/surveyContents?survey_id=${survey_id}`, (data, status) => {
+        console.log(data);
+        surveyTitle.value = data.title;
+        questions = data.questions;
+        console.log(questions);
+        questions.forEach(q => {
+            addQuestion(q.question, q.answer_type);
+        });
+    });
+} else {
+    // new survey
+    addQuestion();
+}
 
 let createSurveyButton = document.getElementById('createSurveyButton').addEventListener('click', () => {
     console.log('create survey button clicked');
-    let dataToSend = {
-        username: sessionStorage.getItem('username'),
-        surveyTitle: document.getElementById('survey-title').value,
-        surveyQuestions: questions
+    let dataToSend;
+    if (sessionStorage.getItem('editingSurvey')) {
+        dataToSend = {
+            survey_id: survey_id,
+            username: sessionStorage.getItem('username'),
+            surveyTitle: document.getElementById('survey-title').value,
+            surveyQuestions: questions
+        }
+        $.post('/submitSurveyEdit', dataToSend, (data, status) => {
+            console.log(`${data} and status is ${status}`);
+        })
+    } else {
+        dataToSend = {
+            username: sessionStorage.getItem('username'),
+            surveyTitle: document.getElementById('survey-title').value,
+            surveyQuestions: questions
+        }
+        $.post('/submitSurvey', dataToSend, (data, status) => {
+            console.log(`${data} and status is ${status}`);
+        })
     }
-    $.post('/submitSurvey', dataToSend, (data, status) => {
-        console.log(`${data} and status is ${status}`);
-    })
 });
 
 
-function addQuestion() {
+function addQuestion(question_text, answer_type) {
     let question = new Question;
     questions.push(question);
     console.log(questions);
@@ -39,6 +69,10 @@ function addQuestion() {
     question_text_area.setAttribute('rows', 2);
     question_text_area.setAttribute('cols', 70);
     question_text_area.setAttribute('oninput', 'this.style.height = ""; this.style.height = this.scrollHeight + "px"');
+    if (question_text != undefined) {
+        question_text_area.value = question_text;
+        question.question_text = question_text_area.value;
+    }
     li.appendChild(question_text_area);
 
     li.appendChild(document.createElement('br'));
@@ -46,7 +80,10 @@ function addQuestion() {
     let text_answer_radio = document.createElement('input');
     text_answer_radio.setAttribute('type', 'radio');
     text_answer_radio.setAttribute('name', 'answerType' + questionID);
-    text_answer_radio.setAttribute('checked', 'checked');
+    if (answer_type == null || answer_type == 'text') {
+        text_answer_radio.setAttribute('checked', 'checked');
+        question.answer_type = 'text';
+    }
     text_answer_radio.addEventListener('change', () => {
         console.log('text type chosen');
         question.answer_type = 'text';
@@ -60,6 +97,10 @@ function addQuestion() {
     let yes_no_answer_radio = document.createElement('input');
     yes_no_answer_radio.setAttribute('type', 'radio');
     yes_no_answer_radio.setAttribute('name', 'answerType' + questionID);
+    if (answer_type == 'yes-no') {
+        yes_no_answer_radio.setAttribute('checked', 'checked');
+        question.answer_type = 'yes-no';
+    }
     yes_no_answer_radio.addEventListener('change', () => {
         console.log('yes/no type chosen');
         question.answer_type = 'yes-no';

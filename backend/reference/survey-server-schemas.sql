@@ -14,6 +14,22 @@ $$ language sql
 -- usage
 select addSurvey('user1', 'testaddfunc') as id
 
+-- add survey with specific id
+delete from surveys where id=24;
+create function addSurvey(id integer, username text, surveyname text)
+returns integer
+as $$
+	insert into surveys (id, creator_id,name)
+        values (
+			id,
+            (select id from creators where name=username),
+            surveyname)
+        returning id;
+$$ language sql;
+
+-- usage
+select addSurvey(24, 'user1', 'testaddfunc') as id
+
 ----------------------------------------------------
 
 
