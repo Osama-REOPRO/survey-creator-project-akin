@@ -229,4 +229,50 @@ app.post('/deleteSurvey', async (req, res) => {
     res.send(('deleted the survey!'));
 })
 
+// app.post('/newTakerId', async(req,res)=>{
+//     console.log(req.body);
+//     let new_id = await client.query(`
+//         insert into takers (name)
+//         values ($$${req.query.taker_name}$$)
+//         returning id
+//     `)
+//     res.send({ new_id: new_id.rows[0].id });
+// });
+
+app.post('/submitAnswers', async (req, res) => {
+    console.log('/submitAnswers', req.body);
+    let taker_id = req.body.taker_id;
+    let taker_name = req.body.taker_name;
+    let answers = req.body.answers;
+
+    if (taker_id == 'undefined' || taker_id == '') {
+        console.log('creating new id');
+        taker_id = await client.query(`
+            insert into takers (name)
+            values ($$${taker_name}$$)
+            returning id
+            `);
+        console.log('req for taker_id returned', taker_id.rows[0].id);
+        taker_id = taker_id.rows[0].id;
+    } else {
+        await client.query(`
+            update takers 
+            set name = $$${taker_name}$$
+            where id=${taker_id}`);
+    }
+
+    answers.forEach(async (ans) => {
+        console.log(ans);
+        await client.query(`
+            insert into answers (question_id, taker_id, answer)
+            values (${ans.id}, ${taker_id}, $$${ans.answer}$$)
+            on conflict (question_id, taker_id) do
+            update set answer=$$${ans.answer}$$
+            where answers.question_id = ${ans.id} and answers.taker_id = ${taker_id}
+        `);
+    });
+    
+    res.send({ taker_id: taker_id });
+});
+
 app.listen(port, () => { console.log(`Started server on port ${port}`); });

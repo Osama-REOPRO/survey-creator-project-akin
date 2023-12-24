@@ -7,7 +7,7 @@
     <title>Survey</title>
 </head>
 
-<body>
+<body onload="onload('<%= questions %>')">
     <h1>
         <%= title %>
     </h1>
@@ -19,10 +19,13 @@
                         <%= question.question %>
                     </label><br>
                     <% if(question.answer_type=='text' ){ %>
-                        <input type="text" placeholder="answer">
+                        <input type="text" placeholder="answer"
+                            onchange="addAnswer('<%= question.id  %>', event.target.value)">
                         <% }else if(question.answer_type=='yes-no' ){ %>
-                            <input type="radio" name="question.id"> yes
-                            <input type="radio" name="question.id"> no
+                            <input type="radio" name="<%= question.id  %>"
+                                onchange="addAnswer('<%= question.id  %>', 'yes')"> yes
+                            <input type="radio" name="<%= question.id  %>"
+                                onchange="addAnswer('<%= question.id  %>', 'no')"> no
                             <% } %>
                 </form>
             </li>
@@ -31,11 +34,14 @@
     <% if(isCreator){ %>
         <button onclick="editSurveyButClicked('<%= survey_id %>');" />Edit Survey 📝
         <button id="copyShareLinkBut"
-            onclick="copyShareLinkButtonClicked('http://localhost:3000/survey?isCreator=false&surveyid=<%= survey_id %>')">Copy Share Link 📋
+            onclick="copyShareLinkButtonClicked('http://localhost:3000/survey?isCreator=false&surveyid=<%= survey_id %>')">Copy
+            Share Link 📋
         </button>
         <span id="copiedAlert" hidden>copied✔</span>
         <% }else{ %>
-            <button>Submit Answers</button>
+            <input type="text" placeholder="enter your name" onchange="onTakerNameChanged(event.target.value)">
+            <button id="submitAnswersButton" disabled onclick="submitAnswerButClicked('<%= survey_id %>');">Submit Answers</button>
+            <span hidden id="submittedText">Submitted ✔</span>
             <% } %>
                 <script src="https://code.jquery.com/jquery-3.7.1.js"
                     integrity="sha256-eKhayi8LEQwp4NKxN+CfCh+3qOVUtJn3QNZ0TciWLP4=" crossorigin="anonymous"></script>
