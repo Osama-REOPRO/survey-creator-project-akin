@@ -39,7 +39,9 @@ let createSurveyButton = document.getElementById('createSurveyButton').addEventL
         }
         $.post('/submitSurveyEdit', dataToSend, (data, status) => {
             console.log(`${data} and status is ${status}`);
-        })
+        });
+        // location.href = `/index?username=${sessionStorage.getItem('username')}`;
+        location.href = `/survey?isCreator=true&creatorName=${sessionStorage.getItem('username')}&surveyid=${survey_id}`;
     } else {
         console.log('submitting new survey');
         dataToSend = {
@@ -49,8 +51,8 @@ let createSurveyButton = document.getElementById('createSurveyButton').addEventL
         }
         $.post('/submitSurvey', dataToSend, (data, status) => {
             console.log(`${data} and status is ${status}`);
-        })
-        location.href=`/index?username=${sessionStorage.getItem('username')}`;
+        });
+        location.href = `/index?username=${sessionStorage.getItem('username')}`;
     }
 });
 
