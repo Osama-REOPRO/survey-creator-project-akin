@@ -50,9 +50,11 @@ let createSurveyButton = document.getElementById('createSurveyButton').addEventL
             surveyQuestions: questions
         }
         $.post('/submitSurvey', dataToSend, (data, status) => {
-            console.log(`${data} and status is ${status}`);
+            // console.log(`${data} and status is ${status}`);
+            // console.log('/submitSurvey\n', data, '\nsurvey_id = ', data.survey_id);
+            location.href = `/survey?isCreator=true&creatorName=${sessionStorage.getItem('username')}&surveyid=${data.survey_id}`;
         });
-        location.href = `/index?username=${sessionStorage.getItem('username')}`;
+        // location.href = `/index?username=${sessionStorage.getItem('username')}`;
     }
 });
 

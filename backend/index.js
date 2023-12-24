@@ -44,6 +44,7 @@ async function addSurvey(username, title, questions) {
     questions.forEach(async (question) => {
         await client.query(`select addQuestion(${survey_id}, $$${question.question_text}$$, $$${question.answer_type}$$) as id`);
     });
+    return survey_id;
 }
 async function editSurvey(survey_id, username, title, questions) {
     deleteSurvey(survey_id);
@@ -214,7 +215,8 @@ app.get('/survey-creator.html', (req, res) => {
 app.get('/survey-creator.js', (req, res) => { res.sendFile(join(__dirname, '..', 'frontend', 'survey-creator.js')); });
 app.post('/submitSurvey', async (req, res) => {
     console.log('/submitSurvey req.body', req.body);
-    await addSurvey(req.body.username, req.body.surveyTitle, req.body.surveyQuestions);
+    let survey_id = await addSurvey(req.body.username, req.body.surveyTitle, req.body.surveyQuestions);
+    res.send({ survey_id: survey_id });
 })
 app.post('/submitSurveyEdit', async (req, res) => {
     console.log('/submitSurveyEdit req.body', req.body);
