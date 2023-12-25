@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Responses</title>
+</head>
+<!-- 
+    render data:
+    survey_responses = [{
+        taker_name: 'taker name',
+        questions_answers: [{ question: 'question text', answer: 'answer text'}]
+    }]
+  -->
+
+<body>
+    <h1>Responses</h1>
+    <ul>
+        <% for(const res of survey_responses){ %>
+            <li>
+                <h3><%= res.taker_name %></h3>
+                <ol>
+                    <% for(const qa of res.questions_answers){ %>
+                    <li>
+                        <span><%= qa.question %></span><br>
+                            <% if(qa.answer){ %>
+                                &emsp; <span><strong>-<%= qa.answer %></strong></span>
+                            <% }else{ %>
+                                &emsp; <span style="color:gray;">-not answered</span>
+                            <% } %>
+                    </li>
+                    <% } %>
+                </ol>
+            </li>
+        <% } %>
+    </ul>
+</body>
+
+</html>

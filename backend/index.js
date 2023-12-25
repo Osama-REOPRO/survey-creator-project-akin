@@ -229,6 +229,52 @@ app.post('/deleteSurvey', async (req, res) => {
     res.send(('deleted the survey!'));
 })
 
+app.get('/survey-responses', async (req, res) => {
+    console.log(req.query);
+    let survey_id = req.query.survey_id;
+    /**
+     * first get question ids in the survey
+     * for each question, get answers
+     */
+    let questions = await client.query(`
+        select * 
+        from questions
+        where survey_id = ${survey_id}
+    `);
+    questions = questions.rows;
+    console.log('questions', questions);
+    let question_ids = questions.map(q => { return q.id });
+    console.log('question_ids', question_ids);
+    let answers = await client.query(`
+        select * from answers
+    `);
+    answers = answers.rows.filter(ans => { return question_ids.includes(ans.question_id) });
+    console.log(answers);
+    let taker_ids = answers.map(ans => { return ans.taker_id });
+    taker_ids = [...new Set(taker_ids)]; // remove duplicate values
+    console.log('taker_ids', taker_ids);
+
+    let takers = await client.query(`select * from takers`);
+    takers = takers.rows;
+    takers = takers.filter(taker => { return taker_ids.includes(taker.id) });
+    console.log('takers', takers);
+
+    let survey_responses = takers.map(taker => {
+        return {
+            taker_name: taker.name,
+            questions_answers: questions.map(q => {
+                return {
+                    question: q.question,
+                    answer: answers.find(ans => { return ans.question_id == q.id && ans.taker_id == taker.id })?.answer
+                }
+            })
+        }
+    });
+    console.log('survey_answers', survey_responses);
+    console.log('survey_answers', survey_responses[0]);
+
+    res.render(join(__dirname, '..', 'frontend', 'responses.ejs'), { survey_responses: survey_responses });
+});
 
 app.post('/submitAnswers', async (req, res) => {
     console.log('/submitAnswers', req.body);
@@ -262,7 +308,7 @@ app.post('/submitAnswers', async (req, res) => {
             where answers.question_id = ${ans.id} and answers.taker_id = ${taker_id}
         `);
     });
-    
+
     res.send({ taker_id: taker_id });
 });
 
