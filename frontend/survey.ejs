@@ -37,6 +37,7 @@
             onclick="copyShareLinkButtonClicked('http://localhost:3000/survey?isCreator=false&surveyid=<%= survey_id %>')">Copy
             Share Link 📋
         </button>
+        <button id="viewResponsesButton" onclick="viewResponsesButtonClicked()">Responses 📲</button>
         <span id="copiedAlert" hidden>copied✔</span>
         <% }else{ %>
             <input type="text" placeholder="enter your name" onchange="onTakerNameChanged(event.target.value)">

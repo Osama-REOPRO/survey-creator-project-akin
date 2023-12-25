@@ -229,15 +229,6 @@ app.post('/deleteSurvey', async (req, res) => {
     res.send(('deleted the survey!'));
 })
 
-// app.post('/newTakerId', async(req,res)=>{
-//     console.log(req.body);
-//     let new_id = await client.query(`
-//         insert into takers (name)
-//         values ($$${req.query.taker_name}$$)
-//         returning id
-//     `)
-//     res.send({ new_id: new_id.rows[0].id });
-// });
 
 app.post('/submitAnswers', async (req, res) => {
     console.log('/submitAnswers', req.body);
