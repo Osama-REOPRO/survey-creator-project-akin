@@ -312,4 +312,6 @@ app.post('/submitAnswers', async (req, res) => {
     res.send({ taker_id: taker_id });
 });
 
+app.get('/styles.css', (req, res) => { res.sendFile(join(__dirname, '..', 'frontend', 'styles.css')) })
+
 app.listen(port, () => { console.log(`Started server on port ${port}`); });
