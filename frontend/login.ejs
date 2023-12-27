@@ -5,18 +5,38 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <link rel="stylesheet" href="styles.css">
+  <style>
+    body {
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      font-size: x-large;
+    }
+
+    #login-register-buttons {
+      display: flex;
+      flex-direction: row;
+      align-items: center;
+      justify-content: space-around;
+    }
+    input{
+      font-size: x-large;
+    }
+  </style>
   <title>login</title>
 </head>
 
 <body>
   <h1>Login to Survey Creator</h1>
   <form action="/login" autocomplete="off" method="get">
-    <label for="username">Username:</label><br>
-    <input type="text" id="username" name="username" placeholder="username"><br>
-    <label for="password">Password:</label><br>
+    <input type="text" id="username" name="username" placeholder="username" style="margin-bottom: 5px;"><br>
     <input type="password" id="password" name="password" placeholder="password"><br><br>
-    <input type="submit" name="action" value="login">
-    <input type="submit" name="action" value="register">
+    <div id="login-register-buttons">
+      <input type="submit" name="action" value="login">
+      <input type="submit" name="action" value="register">
+    </div>
   </form>
   <% if(showWarning){ %>
     <p style="color:red">

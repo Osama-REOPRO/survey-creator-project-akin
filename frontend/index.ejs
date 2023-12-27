@@ -11,7 +11,7 @@
 
 <body onload="onload('<%= creatorName %>')">
     <h1>Survey Creator</h1>
-    <h2>Hello <%= creatorName %>!</h2>
+    <h2>Hello <span style="font-weight: bold;"><%= creatorName %></span>!</h2>
     <!-- <button onclick="createSurvey()">Create New Survey</button> -->
     <form action="survey-creator.html">
         <input type="submit" name="username" value="Create New Survey" onclick="createSurvey('<%= creatorName %>')" />

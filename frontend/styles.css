@@ -1,0 +1,8 @@
+body {
+    font-family: monospace
+}
+
+input, button {
+    font-family: inherit;
+    border-radius: 5px;
+}
