@@ -4,29 +4,108 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href='https://fonts.googleapis.com/css?family=Space Mono' rel='stylesheet'>
     <link rel="stylesheet" href="styles.css">
+    <script type="text/javascript" src="https://livejs.com/live.js"></script>
     <title>Home</title>
     <link rel="icon" href="data:;base64,iVBORw0KGgo="> <!-- disable favicon -->
+    <style>
+        body{
+            margin: 0;
+        }
+        .flex-container{
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .topnav{
+            display: flex;
+            flex-direction: row;
+            align-items: center;
+            justify-content: center;
+            padding: .5rem;
+            background-color: #26577C;
+            color: white;
+            margin-bottom: 1rem;
+        }
+        .topnav p{
+            flex-grow: 1;
+            text-align: center;
+            margin: 0;
+            line-height: 1rem;
+            font-size: large;
+        }
+        #website-name{
+            text-align: left;
+        }
+        #username{
+            text-align: right;
+        }
+        li{
+            margin-bottom: 1rem;
+        }
+        #new-survey-but{
+            width: 15rem;
+            height: 3rem;
+            color: white;
+            background-color: #E55604;
+            border: none;
+            font-size: large;
+            text-align: left;
+            margin-left: .6rem;
+            margin-bottom: .5rem;
+            border-radius: 10px;
+        }
+        ul{
+            margin: 0;
+            padding-left: 1rem;
+            list-style: none; /* Remove default bullets */
+        }
+        ul li::before{
+            content: "\2022";  /* Add content: \2022 is the CSS Code/unicode for a bullet */
+            color: #26577C;
+            font-weight: bold;
+            font-size: large;
+        }
+        li a{
+            color: #26577C;
+            font-size: larger;
+            text-decoration: none;
+            font-weight: bold;
+        }
+        .delete-but{
+            background-color: transparent;
+            color: white;
+            border: none;
+            margin: 0;
+            padding: 1px;
+            width: 2rem;
+        }
+        .delete-icon{
+            /* width: 1rem; */
+            filter: invert(27%) sepia(57%) saturate(521%) hue-rotate(162deg) brightness(101%) contrast(95%);
+        }
+    </style>
 </head>
 
-<body onload="onload('<%= creatorName %>')">
-    <h1>Survey Creator</h1>
-    <h2>Hello <span style="font-weight: bold;"><%= creatorName %></span>!</h2>
-    <!-- <button onclick="createSurvey()">Create New Survey</button> -->
+<body onload="onload('<%= creatorName %>')" class="flex-container">
+    <div class="topnav">
+        <p id="website-name">Survey Creator</p>
+        <p id="username"><%= creatorName %></p>
+    </div>
+
     <form action="survey-creator.html">
-        <input type="submit" name="username" value="Create New Survey" onclick="createSurvey('<%= creatorName %>')" />
+        <input id="new-survey-but" type="submit" name="username" value="&#8226 New Survey" onclick="createSurvey('<%= creatorName %>')" />
     </form>
 
-
-    <h2>Created Surveys</h2>
     <ul>
         <% createdSurveys.forEach((survey)=> { %>
             <li>
                 <a href=<%='/survey' + '?' + 'isCreator=true' + '&creatorName=' + creatorName + '&surveyid=' + survey.id %>>
                     <%= survey.name %>
                 </a>
-                <span>&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp</span>
-                <button onclick="deleteSurvey(' <%=survey.id %>')">Delete</button><br><br>
+                <span>&nbsp&nbsp&nbsp</span>
+                <button class="delete-but" onclick="deleteSurvey(' <%=survey.id %>')"><img class="delete-icon" src="bin.svg" alt="delete icon" /></button>
             </li>
             <% }); %>
     </ul>

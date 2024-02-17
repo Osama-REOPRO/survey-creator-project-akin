@@ -314,4 +314,8 @@ app.post('/submitAnswers', async (req, res) => {
 
 app.get('/styles.css', (req, res) => { res.sendFile(join(__dirname, '..', 'frontend', 'styles.css')) })
 
+app.get('/bin.svg', (req, res) => { res.sendFile(join(__dirname, '..', 'frontend', 'icons', 'bin.svg')) })
+
+
+
 app.listen(port, () => { console.log(`Started server on port ${port}`); });
